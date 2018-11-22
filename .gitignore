@@ -25,7 +25,7 @@
 .idea/**/uiDesigner.xml
 .idea/**/dbnavigator.xml
 .idea/**/misc.xml
-
+.idea/**/vcs.xml
 # Artifacts
 .idea/artifacts
 
