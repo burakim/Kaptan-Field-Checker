@@ -16,7 +16,10 @@ public class User {
     private String password;
     }
 ```
-Did you realise **@MustBeNonNull** and **@MustBeNonEmpty** annotations? Those are annotations to help **Kaptan** to understand your intentations and the structure of your class. Since you put **@MustBeNonNull** above of your **username** field, **Kaptan** checks **username** field if it is null. If it sees null assignment in **username** field, it throws **FieldViolationException** to inform you.
+Did you realise **@MustBeNonNull** and **@MustBeNonEmpty** annotations? 
+
+Those are annotations to help **Kaptan** to understand your intentations and the structure of your class. Since you put **@MustBeNonNull** above of your **username** field, **Kaptan** checks **username** field if it is null. If it sees null assignment in **username** field, it throws **FieldViolationException** to inform you.
+
 **Kaptan** supports following annotations:
 * @MustBeNonNull
 * @MustBeNull
