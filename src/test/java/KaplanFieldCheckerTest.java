@@ -10,22 +10,16 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class KaplanFieldCheckerTest {
 
     @Test
-    public void checkIfKaplanAccpetNullObject()
+    public void checkIfKaplanInitializeWell()
     {
-        try {
-            KaptanFieldChecker kaptanFieldChecker = new KaptanFieldChecker(null);
+        KaptanFieldChecker kaptanFieldChecker = new KaptanFieldChecker();
 
-        }
-        catch (Exception e)
-        {
-         assertTrue(e instanceof IllegalArgumentException);
-        }
     }
 
     @Test
     public void testIllegalArgumentException()
     {
-        assertThrows(IllegalArgumentException.class,()->{ KaptanFieldChecker kaptanFieldChecker = new KaptanFieldChecker(null);});
+        assertThrows(IllegalArgumentException.class,()->{ KaptanFieldChecker kaptanFieldChecker = new KaptanFieldChecker(); kaptanFieldChecker.check(null);});
     }
 
     @Test
@@ -35,21 +29,23 @@ public class KaplanFieldCheckerTest {
         AllNullUser allNullUserTrue = new AllNullUser();
         allNullUserTrue.setPassword("123");
         allNullUserTrue.setUsername("22");
-        assertThrows(FieldViolationException.class,()->{ KaptanFieldChecker kaptanFieldChecker = new KaptanFieldChecker(allNullUserTrue);});
+        assertThrows(FieldViolationException.class,()->{ KaptanFieldChecker kaptanFieldChecker = new KaptanFieldChecker(); kaptanFieldChecker.check(allNullUserTrue);});
         allNullUserTrue.setUsername(null);
         allNullUserTrue.setPassword(null);
-        KaptanFieldChecker kaptanFieldChecker = new KaptanFieldChecker(allNullUserTrue);
+        KaptanFieldChecker kaptanFieldChecker = new KaptanFieldChecker();
+        kaptanFieldChecker.check(allNullUserTrue);
     }
 
     @Test
     public void checkIfMustBeNonNullTagWorks()
     {
         AllNonNullUser allNonNullUser = new AllNonNullUser();
-        assertThrows(FieldViolationException.class,()->{ KaptanFieldChecker kaptanFieldChecker = new KaptanFieldChecker(allNonNullUser);});
+        assertThrows(FieldViolationException.class,()->{ KaptanFieldChecker kaptanFieldChecker = new KaptanFieldChecker(); kaptanFieldChecker.check(allNonNullUser);});
 
         allNonNullUser.setPassword("123");
         allNonNullUser.setUsername("Burak");
-        KaptanFieldChecker kaptanFieldChecker = new KaptanFieldChecker(allNonNullUser);
+        KaptanFieldChecker kaptanFieldChecker = new KaptanFieldChecker();
+        kaptanFieldChecker.check(allNonNullUser);
 
 
     }
@@ -60,11 +56,12 @@ public class KaplanFieldCheckerTest {
         AllMustBeNonEmpty user = new AllMustBeNonEmpty();
         user.setPassword("");
         user.setUsername("");
-        assertThrows(FieldViolationException.class,()->{ KaptanFieldChecker kaptanFieldChecker = new KaptanFieldChecker(user);});
+        assertThrows(FieldViolationException.class,()->{ KaptanFieldChecker kaptanFieldChecker = new KaptanFieldChecker(); kaptanFieldChecker.check(user);});
 
         user.setPassword("123");
         user.setUsername("Burak");
-        KaptanFieldChecker kaptanFieldChecker = new KaptanFieldChecker(user);
+        KaptanFieldChecker kaptanFieldChecker = new KaptanFieldChecker();
+        kaptanFieldChecker.check(user);
     }
 
     @Test
@@ -73,11 +70,12 @@ public class KaplanFieldCheckerTest {
         AllMustBeEmptyUser user = new AllMustBeEmptyUser();
         user.setPassword("22");
         user.setUsername("323");
-        assertThrows(FieldViolationException.class,()->{ KaptanFieldChecker kaptanFieldChecker = new KaptanFieldChecker(user);});
+        assertThrows(FieldViolationException.class,()->{ KaptanFieldChecker kaptanFieldChecker = new KaptanFieldChecker(); kaptanFieldChecker.check(user);});
 
         user.setPassword("");
         user.setUsername("");
-        KaptanFieldChecker kaptanFieldChecker = new KaptanFieldChecker(user);
+        KaptanFieldChecker kaptanFieldChecker = new KaptanFieldChecker();
+        kaptanFieldChecker.check(user);
     }
 
     @Test
@@ -85,12 +83,13 @@ public class KaplanFieldCheckerTest {
     {
         NonNullAndEmptyUser user = new NonNullAndEmptyUser();
         user.setUsername("323");
-        assertThrows(FieldViolationException.class,()->{ KaptanFieldChecker kaptanFieldChecker = new KaptanFieldChecker(user);});
+        assertThrows(FieldViolationException.class,()->{ KaptanFieldChecker kaptanFieldChecker = new KaptanFieldChecker(); kaptanFieldChecker.check(user);});
         user.setUsername(null);
-        assertThrows(FieldViolationException.class,()->{ KaptanFieldChecker kaptanFieldChecker = new KaptanFieldChecker(user);});
+        assertThrows(FieldViolationException.class,()->{ KaptanFieldChecker kaptanFieldChecker = new KaptanFieldChecker(); kaptanFieldChecker.check(user);});
 
         user.setUsername("");
-        KaptanFieldChecker kaptanFieldChecker = new KaptanFieldChecker(user);
+        KaptanFieldChecker kaptanFieldChecker = new KaptanFieldChecker();
+        kaptanFieldChecker.check(user);
     }
 
     @Test
@@ -98,10 +97,27 @@ public class KaplanFieldCheckerTest {
     {
         NullAndNonEmptyUser user = new NullAndNonEmptyUser();
         user.setUsername(null);
-        assertThrows(FieldViolationException.class,()->{ KaptanFieldChecker kaptanFieldChecker = new KaptanFieldChecker(user);});
+        assertThrows(FieldViolationException.class,()->{ KaptanFieldChecker kaptanFieldChecker = new KaptanFieldChecker(); kaptanFieldChecker.check(user);});
         user.setUsername("");
-        assertThrows(FieldViolationException.class,()->{ KaptanFieldChecker kaptanFieldChecker = new KaptanFieldChecker(user);});
+        assertThrows(FieldViolationException.class,()->{ KaptanFieldChecker kaptanFieldChecker = new KaptanFieldChecker(); kaptanFieldChecker.check(user);});
 
     }
 
+    @Test
+    void checkWithPrimitiveVariables() {
+        UserWithPrimitiveVariables user = new UserWithPrimitiveVariables();
+        user.setUsername(null);
+        user.setPassword("123");
+        assertThrows(FieldViolationException.class,()->{KaptanFieldChecker kaptanFieldChecker = new KaptanFieldChecker(); kaptanFieldChecker.check((user));});
+        user.setUsername("uname");
+        user.setPassword("");
+        assertThrows(FieldViolationException.class,()->{KaptanFieldChecker kaptanFieldChecker = new KaptanFieldChecker(); kaptanFieldChecker.check((user));});
+
+        user.setUsername("Burak");
+        user.setPassword("TestPWD");
+        KaptanFieldChecker kaptanFieldChecker = new KaptanFieldChecker();
+        kaptanFieldChecker.check(user);
+
+
+    }
 }

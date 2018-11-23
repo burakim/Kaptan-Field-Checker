@@ -1,26 +1,43 @@
-plugins {
-    id 'java'
-}
+apply plugin: 'java'
+
 
 group 'kaptan-field-checker'
 version '1.0-SNAPSHOT'
 
-sourceCompatibility = 1.8
+sourceCompatibility = JavaVersion.VERSION_1_10
+targetCompatibility = JavaVersion.VERSION_1_10
+
+
 
 repositories {
     mavenCentral()
     jcenter()
 }
 
-dependencies {
-    testImplementation(
-            'org.junit.jupiter:junit-jupiter-api:5.1.0'
-    )
-    testRuntimeOnly(
-            'org.junit.jupiter:junit-jupiter-engine:5.1.0'
-    )
 
 
+sourceSets {
 
+    main {
+        java {
+            srcDir 'src/main/java'
 
+        }
+    }
+    test {
+        java {
+            srcDir  'src/test/java'  // Note @Peter's comment below
+        }
+    }
 }
+
+
+dependencies {
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.3.1'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.3.1'
+}
+
+test {
+    useJUnitPlatform()
+}
+
