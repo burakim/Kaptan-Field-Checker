@@ -1,5 +1,4 @@
 # Kaptan Field Checker Travis CI
 language: java
 jdk:
-  - oraclejdk10
   - openjdk10
