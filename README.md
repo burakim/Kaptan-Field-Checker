@@ -24,10 +24,11 @@ Did you realise **@MustBeNonNull** and **@MustBeNonEmpty** annotations? Those ar
 * @MustBeEmpty
 
 #### To use **Kaptan** to check your classes' fields
-You can initiliaze a **KaptanFieldChecker** object by passing your model object as a function argument. Since it might throw **FieldViolationException**, you should write try&catch block and place **KaptanFieldChecker** in your try block. You can find an example below.
+You can initiliaze a **KaptanFieldChecker** object, then you should pass your model object into **check** function. Since it might throw **FieldViolationException**, you should write try&catch block and place **KaptanFieldChecker** in your try block. You can find an example below.
 ```java
 try{
-KaptanFieldChecker kaptanFieldChecker = new KaptanFieldChecker(targetObject);
+KaptanFieldChecker kaptanFieldChecker = new KaptanFieldChecker();
+kaptanFieldChecker.check(targetObject);
 }
 catch(FieldViolationException e){
     // You can place your exception handling codes.
@@ -37,7 +38,7 @@ catch(FieldViolationException e){
 ```
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details
 
 ## Acknowledgments
 This is an open-source project, we appreciate any contribution from contributors. If you want to improve The SOTA Framework, feel free to fork and create a pull request!
