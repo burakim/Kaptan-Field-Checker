@@ -44,7 +44,7 @@ catch(FieldViolationException e){
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details
 
 ## Acknowledgments
-This is an open-source project, we appreciate any contribution from contributors. If you want to improve Kaptan Field Checker , feel free to fork and create a pull request!
+This is an open-source project, we appreciate any contribution from contributors. If you want to improve Kaptan Class Field Input Checker, feel free to fork and create a pull request!
 
 ## Support Me!
 BTC: 3GaS3Vq3rowJQviRgfTBL8Qy8BMAHCpC9Q
