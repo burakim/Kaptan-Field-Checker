@@ -3,16 +3,11 @@ package kaptan;
 import kaptan.exception.FieldViolationException;
 
 import java.lang.annotation.Annotation;
-import java.lang.invoke.CallSite;
-import java.lang.invoke.ConstantCallSite;
-import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import kaptan.annotations.*;
 
@@ -28,19 +23,16 @@ public class KaptanFieldChecker {
     {
         if(targetObject == null)
             throw new IllegalArgumentException("Argument can not be null;");
-
-        try {
-           if(checkIfThereIsAnyViolatedFields(targetObject).size()>0)
-           {
-               throw new FieldViolationException("");
+           try {
+               if (checkIfThereIsAnyViolatedFields(targetObject).size() > 0) {
+                   throw new FieldViolationException("");
+               }
            }
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
-            e.printStackTrace();
-        } catch (InstantiationException e) {
-            e.printStackTrace();
-        }
+           catch (IllegalAccessException e)
+           {
+               e.printStackTrace();
+           }
+
 
     }
 
@@ -48,57 +40,170 @@ public class KaptanFieldChecker {
 
 
 
-    private ArrayList<AnotationType> checkIfThereIsAnyViolatedFields(Object o1) throws IllegalAccessException, InvocationTargetException, InstantiationException {
+    private ArrayList<AnnotationType> checkIfThereIsAnyViolatedFields(Object o1) throws IllegalAccessException {
         Field[] fields = o1.getClass().getDeclaredFields();
-        ArrayList<AnotationType> arrayList = new ArrayList<>();
+        ArrayList<AnnotationType> arrayList = new ArrayList<>();
         Object o2=null;
+        boolean didWeChangeAccesibility = false;
         for(Field field: fields)
         {
             Annotation[] annotations = field.getAnnotations();
             HashSet<Class<? extends Annotation>> annotationHashSet = retrieveAllAnnotations(annotations);
-            field.setAccessible(true);
+            if(!field.canAccess(o1)) {
+                field.setAccessible(true);
+                didWeChangeAccesibility = true;
+            }
             Object retrievedObject = field.get(o1);
             if(retrievedObject == null)
             {
+
                 if(annotationHashSet.contains(MustBeNonNull.class))
                 {
-                    arrayList.add(AnotationType.NonNull);
+                    arrayList.add(AnnotationType.NonNull);
                 }
                 if(annotationHashSet.contains(MustBeNonEmpty.class))
                 {
-                    arrayList.add(AnotationType.NonEmpty);
+                    arrayList.add(AnnotationType.NonEmpty);
+                }
+                if(annotationHashSet.contains(EnforceIntervalConstraint.class))
+                {
+                    arrayList.add(AnnotationType.IntervalConstraint);
+                }
+                if(annotationHashSet.contains(EnforceRegexRule.class))
+                {
+                    arrayList.add(AnnotationType.RegexRule);
+                }
+                if(annotationHashSet.contains(EnforceSizeConstraint.class))
+                {
+                    arrayList.add(AnnotationType.SizeConstraint);
                 }
             }
             else
             {
-                try {
-                    o2 = retrievedObject.getClass().getConstructor().newInstance();
 
                     if (annotationHashSet.contains(MustBeNull.class)) {
-                        arrayList.add(AnotationType.Null);
+                        arrayList.add(AnnotationType.Null);
                     }
 
                     if (annotationHashSet.contains(MustBeEmpty.class)) {
-                        if (retrievedObject.hashCode() != o2.hashCode()) {
-                            arrayList.add(AnotationType.Empty);
-                        }
+
+                        if(isPassedSizeConstraint(retrievedObject,0,Integer.MAX_VALUE) == true){
+                          arrayList.add(AnnotationType.Empty);
+                      }
                     }
 
                     if (annotationHashSet.contains(MustBeNonEmpty.class)) {
-                        if (retrievedObject.hashCode() == o2.hashCode()) {
-                            arrayList.add(AnotationType.NonEmpty);
+                        if(isPassedSizeConstraint(retrievedObject,0,Integer.MAX_VALUE) == false)
+                        {
+                            arrayList.add(AnnotationType.NonEmpty);
                         }
                     }
-                }
-                catch (NoSuchMethodException e) {
-                    // It doesnt have default constructor.
-                    //e.printStackTrace();
-                }
-            }
 
+                    if(annotationHashSet.contains(EnforceIntervalConstraint.class))
+                    {
+                        EnforceIntervalConstraint annotation = (EnforceIntervalConstraint) findAnnotation(annotations,AnnotationType.IntervalConstraint);
+                        if(isPassedIntervalConstraint(annotation,retrievedObject) == false)
+                            arrayList.add(AnnotationType.IntervalConstraint);
+
+                    }
+                    if(annotationHashSet.contains(EnforceSizeConstraint.class))
+                    {
+                        EnforceSizeConstraint annotation = (EnforceSizeConstraint) findAnnotation(annotations,AnnotationType.SizeConstraint);
+                        int max =  annotation.max();
+                        int min = annotation.min();
+                        if(isPassedSizeConstraint(retrievedObject,min,max) == false)
+                            arrayList.add(AnnotationType.SizeConstraint);
+
+                    }
+                    if(annotationHashSet.contains(EnforceRegexRule.class))
+                    {
+                        EnforceRegexRule annotation = (EnforceRegexRule) findAnnotation(annotations,AnnotationType.RegexRule);
+                        if(isPassedRegexRule(annotation,retrievedObject) == false)
+                        {
+                            arrayList.add(AnnotationType.RegexRule);
+                        }
+                    }
+
+
+            }
+            if (didWeChangeAccesibility) {
+                field.setAccessible(false);
+                didWeChangeAccesibility = false;
+            }
         }
         return arrayList;
     }
+
+
+
+
+
+    private  boolean isPassedIntervalConstraint(EnforceIntervalConstraint annotation, Object retrievedObject)
+    {
+        long minVal = annotation.min();
+        long maxVal = annotation.max();
+
+        if(retrievedObject instanceof Number)
+        {
+            long retrievedNumber =((Number)retrievedObject).longValue();
+            if(minVal<retrievedNumber && maxVal>= retrievedNumber)
+            {
+                return true;
+            }
+
+        }
+        return false;
+    }
+    private boolean isPassedSizeConstraint(Object retrievedObject, int min, int max )
+    {
+        int size = Integer.MIN_VALUE;
+        if((retrievedObject instanceof Map))
+        {
+         size = ((Map)retrievedObject).size();
+        }
+        else if(retrievedObject instanceof Collection)
+        {
+            size = ((Collection)retrievedObject).size();
+        }
+        else if(retrievedObject instanceof KaptanField)
+        {
+            size = ((KaptanField) retrievedObject).size();
+        }
+        else if(retrievedObject instanceof String)
+        {
+            size = ((String) retrievedObject).length();
+        }
+        if(size>=0 && ((min<size)&&(size<=max)))
+        {
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+
+    private boolean isPassedRegexRule (EnforceRegexRule annotation, Object retrievedObject)
+    {
+        String regex = annotation.value();
+        String receivedString =null;
+        if(retrievedObject instanceof String)
+        {
+            receivedString  = (String) retrievedObject;
+        }
+        else
+        {
+            receivedString = retrievedObject.toString(); // If they override toString function thats ok.
+        }
+        Pattern p = Pattern.compile(regex);
+        Matcher m = p.matcher(receivedString);
+        if(m .find() != true)
+        {
+            return false;
+        }
+        else
+            return true;
+    }
+
 
     private HashSet<Class<? extends Annotation>> retrieveAllAnnotations(Annotation[] annotations)
     {
@@ -113,12 +218,10 @@ public class KaptanFieldChecker {
     }
 
 
-    private int findAnnotation(Annotation[] annotations, AnotationType anotationType)
+    private Annotation findAnnotation(Annotation[] annotations, AnnotationType annotationType)
     {
-
-
-Object o1 = null;
-        switch (anotationType)
+        Object o1 = null;
+        switch (annotationType)
         {
             case Null:
             {
@@ -140,16 +243,29 @@ Object o1 = null;
                 o1 = MustBeEmpty.class;
                 break;
             }
+            case RegexRule:
+            {
+                o1 = EnforceRegexRule.class;
+                break;
+            }
+            case IntervalConstraint: {
+                o1 = EnforceIntervalConstraint.class;
+                break;
+            }
+            case SizeConstraint: {
+                o1 = EnforceSizeConstraint.class;
+                break;
+            }
         }
 
         for(int i = 0;i<annotations.length;i++)
         {
             if(annotations[i].annotationType().equals(o1))
             {
-                return i;
+                return annotations[i];
             }
         }
-        return -1;
+        return null;
     }
 
 
