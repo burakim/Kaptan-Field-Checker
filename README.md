@@ -4,7 +4,6 @@
 Kaptan is a JAVA library that checks class variables in terms of input validation and verification. If it sees any variable violation, it immediately throws **FieldViolationException**.
 
 ## Getting Started
-[Maven Central or BinTray]
 
 ### How Can I Use It?
 Let's say that you have a model (POJO) class whose name is **User** and it has **username** and **password** String fields. Let's assume you don't want to get any null assignment for **username** field and empty value assignment for **password** field. You write an input validation mechanism on your own or you can use **Kaptan** for it. The below example shows a way to use **Kaptan** for it.
