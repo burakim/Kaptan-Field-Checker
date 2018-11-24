@@ -140,10 +140,45 @@ public class KaptanFieldChecker {
 
 
 
+    private boolean doesItContainsFollowingDecimalValues(double[] values, Object retrievedObject)
+    {
+        double value = Double.MIN_VALUE;
+        if(retrievedObject instanceof Number)
+        {
+            value = (Double) retrievedObject;
+        }
+
+        Arrays.sort(values);
+
+        if(Arrays.binarySearch(values,value)>=0)
+            return true;
+        else
+            return false;
+
+    }
+
+    private boolean doesItContainsFollowingStringValues(String[] values, Object retrievedObject)
+    {
+        Arrays.sort(values);
+        if(retrievedObject instanceof  String)
+        {
+            String str = (String)retrievedObject;
+            if(Arrays.binarySearch(values,str) >= 0)
+            return true;
+            else
+                return false;
+        }
+        else
+        {
+            return false;
+        }
+
+    }
+
     private  boolean isPassedIntervalConstraint(EnforceIntervalConstraint annotation, Object retrievedObject)
     {
-        long minVal = annotation.min();
-        long maxVal = annotation.max();
+        double minVal = annotation.min();
+        double maxVal = annotation.max();
 
         if(retrievedObject instanceof Number)
         {
@@ -269,6 +304,7 @@ public class KaptanFieldChecker {
         }
         return null;
     }
+
 
 
 }
