@@ -25,6 +25,9 @@ Those are annotations to help **Kaptan** to understand your intentations and the
 * @MustBeNull
 * @MustBeNonEmpty
 * @MustBeEmpty
+* @EnforceSizeConstraint(min=<value>, max=<value>)
+* @EnforceRegexRule(<regex-string-value>)
+* @EnforceIntervalConstraint(min=<value>, max=<value>)
 
 #### To use **Kaptan** to check your classes' fields
 You can initiliaze a **KaptanFieldChecker** object, then you should pass your model object into **check** function. Since it might throw **FieldViolationException**, you should write try&catch block and place **KaptanFieldChecker** in your try block. You can find an example below.
@@ -39,6 +42,10 @@ catch(FieldViolationException e){
 }
 
 ```
+
+#### What does Kaptan support?
+Kaptan supports primitives, data structures that are in the Java collection library, and Strings. If you want to Kaptan support your custom data structure, you can make it happen by implementing **KaptanField** interface in your custom data structure.
+
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details
