@@ -1,7 +1,8 @@
 apply plugin: 'java'
 
 
-group 'kaptan-field-checker'
+group 'me.yesilyurt.burak'
+artifacts {'kaptan'}
 version '1.0-SNAPSHOT'
 
 sourceCompatibility = JavaVersion.VERSION_1_10

@@ -135,7 +135,7 @@ gradle-app.setting
 **/build/
 
 # Project Sepecific Should be ignored files
-src/main/java/main.java
+src/main/java/kaptan/main.java
 src/main/java/kaptan/User.java
 
 # End of https://www.gitignore.io/api/java,gradle,intellij

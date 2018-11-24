@@ -24,8 +24,10 @@ public class KaptanFieldChecker {
         if(targetObject == null)
             throw new IllegalArgumentException("Argument can not be null;");
            try {
-               if (checkIfThereIsAnyViolatedFields(targetObject).size() > 0) {
-                   throw new FieldViolationException("");
+               ArrayList<AnnotationType> violations = checkIfThereIsAnyViolatedFields(targetObject);
+               if (violations.size() > 0) {
+                   String exceptionMessage = targetObject.getClass().getName()+" named class has "+violations.size()+" violations class field value.";
+                   throw new FieldViolationException(exceptionMessage,violations);
                }
            }
            catch (IllegalAccessException e)
