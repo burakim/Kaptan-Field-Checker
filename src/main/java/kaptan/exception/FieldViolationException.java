@@ -1,19 +1,19 @@
 package kaptan.exception;
 
-import kaptan.AnnotationType;
 
+import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 
 public class FieldViolationException extends NullPointerException {
 
-    private ArrayList<AnnotationType> violations;
-    public FieldViolationException(String message,ArrayList<AnnotationType> violations)
+    private ArrayList<Class<? extends Annotation>> violations;
+    public FieldViolationException(String message,ArrayList<Class<? extends Annotation>> violations)
     {
         super(message);
         violations = new ArrayList<>();
     }
 
-    public ArrayList<AnnotationType> getViolations()
+    public ArrayList<Class<? extends Annotation>> getViolations()
     {
         return violations;
     }

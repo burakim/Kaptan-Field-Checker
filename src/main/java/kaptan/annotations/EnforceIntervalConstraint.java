@@ -8,7 +8,4 @@ import java.math.BigDecimal;
 public @interface EnforceIntervalConstraint {
     double min() default 0;
     double max() default 10;
-
-
-
 }

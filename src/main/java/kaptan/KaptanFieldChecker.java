@@ -1,10 +1,32 @@
+/*
+ * Copyright (c) 2018.
+ * Author: Halim Burak Yesilyurt (h.burakyesilyurt@gmail.com)
+ * This library is distributed with MIT licence.
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
 package kaptan;
 
 import kaptan.exception.FieldViolationException;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -14,17 +36,23 @@ import kaptan.annotations.*;
 public class KaptanFieldChecker {
 
 
-    public KaptanFieldChecker()
-    {
-
-    }
-
+    /**
+     * <p>It checks the function argument if it complies with class field rules. When it is called, it looks the target class to understand the defined rules.
+     * </br>Then, if it see any violation, it saves all class field violation into the ArrayList.
+     * </br>Before returning null value, it throws FieldViolationException if it sees any value in the ArrayList.</p>
+     * If it received null value as a function argument, it throws IllegalArgumentException.
+     * @since 1.0
+     * @author Halim Burak Yesilyurt
+     * @param targetObject
+     * @throws FieldViolationException
+     * @throws IllegalArgumentException
+     */
     public void check(Object targetObject) throws FieldViolationException, IllegalArgumentException
     {
         if(targetObject == null)
             throw new IllegalArgumentException("Argument can not be null;");
            try {
-               ArrayList<AnnotationType> violations = checkIfThereIsAnyViolatedFields(targetObject);
+               ArrayList<Class<? extends Annotation>> violations = checkIfThereIsAnyViolatedFields(targetObject);
                if (violations.size() > 0) {
                    String exceptionMessage = targetObject.getClass().getName()+" named class has "+violations.size()+" violations class field value.";
                    throw new FieldViolationException(exceptionMessage,violations);
@@ -38,13 +66,15 @@ public class KaptanFieldChecker {
 
     }
 
-//    private boolean isPassedFrom
-
-
-
-    private ArrayList<AnnotationType> checkIfThereIsAnyViolatedFields(Object o1) throws IllegalAccessException {
+    /**
+     *
+     * @param o1
+     * @return
+     * @throws IllegalAccessException
+     */
+    private ArrayList<Class<? extends Annotation>> checkIfThereIsAnyViolatedFields(Object o1) throws IllegalAccessException {
         Field[] fields = o1.getClass().getDeclaredFields();
-        ArrayList<AnnotationType> arrayList = new ArrayList<>();
+        ArrayList<Class<? extends Annotation>> arrayList = new ArrayList<>();
         Object o2=null;
         boolean didWeChangeAccesibility = false;
         for(Field field: fields)
@@ -61,68 +91,68 @@ public class KaptanFieldChecker {
 
                 if(annotationHashSet.contains(MustBeNonNull.class))
                 {
-                    arrayList.add(AnnotationType.NonNull);
+                    arrayList.add(MustBeNonNull.class);
                 }
                 if(annotationHashSet.contains(MustBeNonEmpty.class))
                 {
-                    arrayList.add(AnnotationType.NonEmpty);
+                    arrayList.add(MustBeNonEmpty.class);
                 }
                 if(annotationHashSet.contains(EnforceIntervalConstraint.class))
                 {
-                    arrayList.add(AnnotationType.IntervalConstraint);
+                    arrayList.add(EnforceIntervalConstraint.class);
                 }
                 if(annotationHashSet.contains(EnforceRegexRule.class))
                 {
-                    arrayList.add(AnnotationType.RegexRule);
+                    arrayList.add(EnforceRegexRule.class);
                 }
                 if(annotationHashSet.contains(EnforceSizeConstraint.class))
                 {
-                    arrayList.add(AnnotationType.SizeConstraint);
+                    arrayList.add(EnforceSizeConstraint.class);
                 }
             }
             else
             {
 
                     if (annotationHashSet.contains(MustBeNull.class)) {
-                        arrayList.add(AnnotationType.Null);
+                        arrayList.add(MustBeNull.class);
                     }
 
                     if (annotationHashSet.contains(MustBeEmpty.class)) {
 
                         if(isPassedSizeConstraint(retrievedObject,0,Integer.MAX_VALUE) == true){
-                          arrayList.add(AnnotationType.Empty);
+                          arrayList.add(MustBeEmpty.class);
                       }
                     }
 
                     if (annotationHashSet.contains(MustBeNonEmpty.class)) {
                         if(isPassedSizeConstraint(retrievedObject,0,Integer.MAX_VALUE) == false)
                         {
-                            arrayList.add(AnnotationType.NonEmpty);
+                            arrayList.add(MustBeNonEmpty.class);
                         }
                     }
 
                     if(annotationHashSet.contains(EnforceIntervalConstraint.class))
                     {
-                        EnforceIntervalConstraint annotation = (EnforceIntervalConstraint) findAnnotation(annotations,AnnotationType.IntervalConstraint);
+                        EnforceIntervalConstraint annotation = (EnforceIntervalConstraint) findAnnotation(annotations,EnforceIntervalConstraint.class);
                         if(isPassedIntervalConstraint(annotation,retrievedObject) == false)
-                            arrayList.add(AnnotationType.IntervalConstraint);
+                            arrayList.add(EnforceIntervalConstraint.class);
 
                     }
                     if(annotationHashSet.contains(EnforceSizeConstraint.class))
                     {
-                        EnforceSizeConstraint annotation = (EnforceSizeConstraint) findAnnotation(annotations,AnnotationType.SizeConstraint);
+                        EnforceSizeConstraint annotation = (EnforceSizeConstraint) findAnnotation(annotations,EnforceSizeConstraint.class);
                         int max =  annotation.max();
                         int min = annotation.min();
                         if(isPassedSizeConstraint(retrievedObject,min,max) == false)
-                            arrayList.add(AnnotationType.SizeConstraint);
+                            arrayList.add(EnforceSizeConstraint.class);
 
                     }
                     if(annotationHashSet.contains(EnforceRegexRule.class))
                     {
-                        EnforceRegexRule annotation = (EnforceRegexRule) findAnnotation(annotations,AnnotationType.RegexRule);
+                        EnforceRegexRule annotation = (EnforceRegexRule) findAnnotation(annotations,EnforceRegexRule.class);
                         if(isPassedRegexRule(annotation,retrievedObject) == false)
                         {
-                            arrayList.add(AnnotationType.RegexRule);
+                            arrayList.add(EnforceRegexRule.class);
                         }
                     }
 
@@ -175,6 +205,12 @@ public class KaptanFieldChecker {
 
     }
 
+    /**
+     *
+     * @param annotation
+     * @param retrievedObject
+     * @return
+     */
     private  boolean isPassedIntervalConstraint(EnforceIntervalConstraint annotation, Object retrievedObject)
     {
         double minVal = annotation.min();
@@ -191,6 +227,14 @@ public class KaptanFieldChecker {
         }
         return false;
     }
+
+    /**
+     *
+     * @param retrievedObject
+     * @param min
+     * @param max
+     * @return
+     */
     private boolean isPassedSizeConstraint(Object retrievedObject, int min, int max )
     {
         int size = Integer.MIN_VALUE;
@@ -219,6 +263,12 @@ public class KaptanFieldChecker {
         }
     }
 
+    /**
+     *
+     * @param annotation
+     * @param retrievedObject
+     * @return
+     */
     private boolean isPassedRegexRule (EnforceRegexRule annotation, Object retrievedObject)
     {
         String regex = annotation.value();
@@ -241,7 +291,11 @@ public class KaptanFieldChecker {
             return true;
     }
 
-
+    /**
+     *
+     * @param annotations
+     * @return
+     */
     private HashSet<Class<? extends Annotation>> retrieveAllAnnotations(Annotation[] annotations)
     {
         HashSet<Class<? extends Annotation> > annotationHashSet = new HashSet<>();
@@ -254,47 +308,14 @@ public class KaptanFieldChecker {
 
     }
 
-
-    private Annotation findAnnotation(Annotation[] annotations, AnnotationType annotationType)
+    /**
+     *
+     * @param annotations
+     * @param o1
+     * @return
+     */
+    private Annotation findAnnotation(Annotation[] annotations, Object o1)
     {
-        Object o1 = null;
-        switch (annotationType)
-        {
-            case Null:
-            {
-                o1 = MustBeNull.class;
-                break;
-            }
-            case NonNull:
-            {
-                o1 = MustBeNonNull.class;
-                break;
-            }
-            case NonEmpty:
-            {
-                o1 = MustBeNonEmpty.class;
-                break;
-            }
-            case Empty:
-            {
-                o1 = MustBeEmpty.class;
-                break;
-            }
-            case RegexRule:
-            {
-                o1 = EnforceRegexRule.class;
-                break;
-            }
-            case IntervalConstraint: {
-                o1 = EnforceIntervalConstraint.class;
-                break;
-            }
-            case SizeConstraint: {
-                o1 = EnforceSizeConstraint.class;
-                break;
-            }
-        }
-
         for(int i = 0;i<annotations.length;i++)
         {
             if(annotations[i].annotationType().equals(o1))
@@ -304,6 +325,9 @@ public class KaptanFieldChecker {
         }
         return null;
     }
+
+
+
 
 
 
