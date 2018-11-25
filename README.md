@@ -1,4 +1,4 @@
-# Kaptan Class Field Input Checker ![BuildStatus](https://api.travis-ci.com/burakim/Kaptan-Field-Checker.svg?token=UayyDWyqDWfpvheAzvhz&branch=master)
+# Kaptan Class Field Input Checker [![Build Status](https://travis-ci.com/burakim/Kaptan-Field-Checker.svg?branch=master)](https://travis-ci.com/burakim/Kaptan-Field-Checker)
 > *"Kaptan" is a Turkish word that means captain.*
 
 Kaptan is a JAVA library that checks class variables in terms of input validation and verification. If it sees any variable violation, it immediately throws **FieldViolationException**.
