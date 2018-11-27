@@ -34,8 +34,7 @@ import java.util.regex.Pattern;
 import kaptan.annotations.*;
 
 /**
- * KaptanFieldChecker is the main class of this library.
- * <br> It checks the target object in terms of field value assignment violations.
+ * KaptanFieldChecker is the main class that checks the target object in terms of field value assignment violations.
  */
 public class KaptanFieldChecker {
 
