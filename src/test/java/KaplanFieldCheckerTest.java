@@ -6,8 +6,8 @@ import testmodels.*;
 import java.util.LinkedList;
 import java.util.PriorityQueue;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
 public class KaplanFieldCheckerTest {
@@ -36,7 +36,7 @@ public class KaplanFieldCheckerTest {
         allNullUserTrue.setUsername(null);
         allNullUserTrue.setPassword(null);
         KaptanFieldChecker kaptanFieldChecker = new KaptanFieldChecker();
-        kaptanFieldChecker.check(allNullUserTrue);
+        assertDoesNotThrow(()->{kaptanFieldChecker.check(allNullUserTrue);},"Exception is thrown.");
     }
 
     @Test
@@ -48,7 +48,9 @@ public class KaplanFieldCheckerTest {
         allNonNullUser.setPassword("123");
         allNonNullUser.setUsername("Burak");
         KaptanFieldChecker kaptanFieldChecker = new KaptanFieldChecker();
-        kaptanFieldChecker.check(allNonNullUser);
+        assertDoesNotThrow(()->{kaptanFieldChecker.check(allNonNullUser);},"Exception is thrown.");
+
+
 
 
     }
@@ -64,8 +66,8 @@ public class KaplanFieldCheckerTest {
         user.setPassword("123");
         user.setUsername("Burak");
         KaptanFieldChecker kaptanFieldChecker = new KaptanFieldChecker();
-        kaptanFieldChecker.check(user);
-    }
+        assertDoesNotThrow(()->{kaptanFieldChecker.check(user);},"Exception is thrown.");
+        }
 
     @Test
     public void checkIfMustBeEmptyTagWorks()
@@ -78,7 +80,7 @@ public class KaplanFieldCheckerTest {
         user.setPassword("");
         user.setUsername("");
         KaptanFieldChecker kaptanFieldChecker = new KaptanFieldChecker();
-        kaptanFieldChecker.check(user);
+        assertDoesNotThrow(()->{kaptanFieldChecker.check(user);},"Exception is thrown.");
     }
 
     @Test
@@ -92,7 +94,7 @@ public class KaplanFieldCheckerTest {
 
         user.setUsername("");
         KaptanFieldChecker kaptanFieldChecker = new KaptanFieldChecker();
-        kaptanFieldChecker.check(user);
+        assertDoesNotThrow(()->{kaptanFieldChecker.check(user);},"Exception is thrown.");
     }
 
     @Test
@@ -119,7 +121,7 @@ public class KaplanFieldCheckerTest {
         user.setUsername("Burak");
         user.setPassword("TestPWD");
         KaptanFieldChecker kaptanFieldChecker = new KaptanFieldChecker();
-        kaptanFieldChecker.check(user);
+        assertDoesNotThrow(()->{kaptanFieldChecker.check(user);},"Exception is thrown.");
 
 
     }
@@ -133,20 +135,20 @@ public class KaplanFieldCheckerTest {
         user.addName("TST");
         user.addName("BRK1");
         user.addName("BRK1a");
-        kaptanFieldChecker.check(user);
+        assertDoesNotThrow(()->{kaptanFieldChecker.check(user);},"Exception is thrown.");
         user.addName("BRK2");
         user.addName("BRK3");
-        kaptanFieldChecker.check(user);
+        assertDoesNotThrow(()->{kaptanFieldChecker.check(user);},"Exception is thrown.");
         user.addName("BRK5");
         assertThrows(FieldViolationException.class,()->{ kaptanFieldChecker.check((user));});
         user.removeLastName();
-        kaptanFieldChecker.check(user);
+        assertDoesNotThrow(()->{kaptanFieldChecker.check(user);},"Exception is thrown.");
         user.setAge(1);
         assertThrows(FieldViolationException.class,()->{ kaptanFieldChecker.check((user));});
         user.setAge(67);
         assertThrows(FieldViolationException.class,()->{ kaptanFieldChecker.check((user));});
         user.setAge(32);
-        kaptanFieldChecker.check(user);
+        assertDoesNotThrow(()->{kaptanFieldChecker.check(user);},"Exception is thrown.");
     }
 
     @Test
@@ -160,7 +162,7 @@ public class KaplanFieldCheckerTest {
         user.addInterest("TEST");
         user.setName("Burak3#");
         user.addWaitingFindings("tst");
-        kaptanFieldChecker.check(user);
+        assertDoesNotThrow(()->{kaptanFieldChecker.check(user);},"Exception is thrown.");
         user.setName("Burak");
         assertThrows(FieldViolationException.class,()->{ kaptanFieldChecker.check((user));});
         user.setName("");
@@ -171,7 +173,7 @@ public class KaplanFieldCheckerTest {
         user.setInterest(null);
         assertThrows(FieldViolationException.class,()->{ kaptanFieldChecker.check((user));});
         user.setInterest(new LinkedList<>());
-        kaptanFieldChecker.check(user);
+        assertDoesNotThrow(()->{kaptanFieldChecker.check(user);},"Exception is thrown.");
         user.setFavoriteByte(new Long(2323232).byteValue());
         assertThrows(FieldViolationException.class,()->{ kaptanFieldChecker.check((user));});
         user.setFavoriteByte(new Long(0).byteValue());
@@ -179,10 +181,6 @@ public class KaplanFieldCheckerTest {
         assertThrows(FieldViolationException.class,()->{ kaptanFieldChecker.check((user));});
         user.setWaitingFindings(new PriorityQueue<>());
         assertThrows(FieldViolationException.class,()->{ kaptanFieldChecker.check((user));});
-
-
-
-
 
     }
 }
