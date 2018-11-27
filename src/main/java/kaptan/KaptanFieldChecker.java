@@ -33,19 +33,23 @@ import java.util.regex.Pattern;
 
 import kaptan.annotations.*;
 
+/**
+ * KaptanFieldChecker is the main class of this library.
+ * <br> It checks the target object in terms of field value assignment violations.
+ */
 public class KaptanFieldChecker {
 
 
     /**
-     * <p>It checks the function argument if it complies with class field rules. When it is called, it looks the target class to understand the defined rules.
-     * </br>Then, if it see any violation, it saves all class field violation into the ArrayList.
-     * </br>Before returning null value, it throws FieldViolationException if it sees any value in the ArrayList.</p>
+     * <p> It checks the function argument if it complies with class field rules. When it is called, it looks the target class to understand the defined rules.
+     * <br> Then, if it see any violation, it saves all class field violation into the ArrayList.
+     * <br> Before returning null value, it throws FieldViolationException if it sees any value in the ArrayList.</p>
      * If it received null value as a function argument, it throws IllegalArgumentException.
      * @since 1.0
      * @author Halim Burak Yesilyurt
-     * @param targetObject
-     * @throws FieldViolationException
-     * @throws IllegalArgumentException
+     * @param targetObject A target object that is going to be checked in terms of variable value assignment violations.
+     * @throws FieldViolationException If it see any class field value assignment violation, FieldViolationException is thrown.
+     * @throws IllegalArgumentException If it see function parameter as a null value, IllegalArgumentException is thrown.
      */
     public void check(Object targetObject) throws FieldViolationException, IllegalArgumentException
     {
@@ -54,7 +58,7 @@ public class KaptanFieldChecker {
            try {
                ArrayList<Class<? extends Annotation>> violations = checkIfThereIsAnyViolatedFields(targetObject);
                if (violations.size() > 0) {
-                   String exceptionMessage = targetObject.getClass().getName()+" named class has "+violations.size()+" violations class field value.";
+                   String exceptionMessage = targetObject.getClass().getName()+" named class has "+violations.size()+" class field value assignment violations.";
                    throw new FieldViolationException(exceptionMessage,violations);
                }
            }
@@ -67,15 +71,14 @@ public class KaptanFieldChecker {
     }
 
     /**
-     *
-     * @param o1
-     * @return
-     * @throws IllegalAccessException
+     *It gets target object to check if it contains any class field violation. If it encounter any illegal access attempts to class fields, it throws IllegalAccessException.
+     * @param o1 Target object
+     * @return ArrayList that contains violated annotation rules.
+     * @throws IllegalAccessException If Kaptan can not access assigned value of class variable, IllegalAccessException is thrown.
      */
     private ArrayList<Class<? extends Annotation>> checkIfThereIsAnyViolatedFields(Object o1) throws IllegalAccessException {
         Field[] fields = o1.getClass().getDeclaredFields();
         ArrayList<Class<? extends Annotation>> arrayList = new ArrayList<>();
-        Object o2=null;
         boolean didWeChangeAccesibility = false;
         for(Field field: fields)
         {
@@ -119,13 +122,13 @@ public class KaptanFieldChecker {
 
                     if (annotationHashSet.contains(MustBeEmpty.class)) {
 
-                        if(isPassedSizeConstraint(retrievedObject,0,Integer.MAX_VALUE) == true){
+                        if(isPassedSizeConstraint(retrievedObject,0,Integer.MAX_VALUE)){
                           arrayList.add(MustBeEmpty.class);
                       }
                     }
 
                     if (annotationHashSet.contains(MustBeNonEmpty.class)) {
-                        if(isPassedSizeConstraint(retrievedObject,0,Integer.MAX_VALUE) == false)
+                        if(!isPassedSizeConstraint(retrievedObject,0,Integer.MAX_VALUE))
                         {
                             arrayList.add(MustBeNonEmpty.class);
                         }
@@ -134,25 +137,29 @@ public class KaptanFieldChecker {
                     if(annotationHashSet.contains(EnforceIntervalConstraint.class))
                     {
                         EnforceIntervalConstraint annotation = (EnforceIntervalConstraint) findAnnotation(annotations,EnforceIntervalConstraint.class);
-                        if(isPassedIntervalConstraint(annotation,retrievedObject) == false)
-                            arrayList.add(EnforceIntervalConstraint.class);
+                        if(annotation != null) {
+                            if (!isPassedIntervalConstraint(annotation, retrievedObject))
+                                arrayList.add(EnforceIntervalConstraint.class);
+                        }
 
                     }
                     if(annotationHashSet.contains(EnforceSizeConstraint.class))
                     {
                         EnforceSizeConstraint annotation = (EnforceSizeConstraint) findAnnotation(annotations,EnforceSizeConstraint.class);
-                        int max =  annotation.max();
-                        int min = annotation.min();
-                        if(isPassedSizeConstraint(retrievedObject,min,max) == false)
-                            arrayList.add(EnforceSizeConstraint.class);
-
+                        if(annotation != null) {
+                            int max = annotation.max();
+                            int min = annotation.min();
+                            if (!isPassedSizeConstraint(retrievedObject, min, max))
+                                arrayList.add(EnforceSizeConstraint.class);
+                        }
                     }
                     if(annotationHashSet.contains(EnforceRegexRule.class))
                     {
                         EnforceRegexRule annotation = (EnforceRegexRule) findAnnotation(annotations,EnforceRegexRule.class);
-                        if(isPassedRegexRule(annotation,retrievedObject) == false)
-                        {
-                            arrayList.add(EnforceRegexRule.class);
+                        if(annotation != null) {
+                            if (!isPassedRegexRule(annotation, retrievedObject)) {
+                                arrayList.add(EnforceRegexRule.class);
+                            }
                         }
                     }
 
@@ -206,10 +213,10 @@ public class KaptanFieldChecker {
     }
 
     /**
-     *
-     * @param annotation
-     * @param retrievedObject
-     * @return
+     * It checks EnforceIntervalConstraint annotated fields of target object in terms of compatibility of defined interval constraint.
+     * @param annotation EnforceIntervalConstraint annotation
+     * @param retrievedObject A target object that contains EnforceIntervalConstraint annotation.
+     * @return boolean It refers if the field pass interval constraint test.
      */
     private  boolean isPassedIntervalConstraint(EnforceIntervalConstraint annotation, Object retrievedObject)
     {
@@ -229,11 +236,11 @@ public class KaptanFieldChecker {
     }
 
     /**
-     *
-     * @param retrievedObject
-     * @param min
-     * @param max
-     * @return
+     *It checks EnforceSizeConstraint annotated fields of target object in terms of having elements in minimum and maximum size boundaries.
+     * @param retrievedObject A target object that contains EnforceSizeConstraint annotation.
+     * @param min It is one less of minimum value that can be assigned to this field seamlessly.
+     * @param max It is maximum value that can be assigned to this field seamlessly.
+     * @return boolean It refers if the field pass size constraint test.
      */
     private boolean isPassedSizeConstraint(Object retrievedObject, int min, int max )
     {
@@ -264,10 +271,10 @@ public class KaptanFieldChecker {
     }
 
     /**
-     *
-     * @param annotation
-     * @param retrievedObject
-     * @return
+     *It checks EnforceSizeConstraint annotated fields of target object in terms of complying given regular expression.
+     * @param annotation EnforceRegexRule annotation
+     * @param retrievedObject A target object that contains EnforceRegexRule annotation.
+     * @return boolean
      */
     private boolean isPassedRegexRule (EnforceRegexRule annotation, Object retrievedObject)
     {
@@ -283,7 +290,7 @@ public class KaptanFieldChecker {
         }
         Pattern p = Pattern.compile(regex);
         Matcher m = p.matcher(receivedString);
-        if(m .find() != true)
+        if(!m .find())
         {
             return false;
         }
@@ -292,9 +299,9 @@ public class KaptanFieldChecker {
     }
 
     /**
-     *
-     * @param annotations
-     * @return
+     * Since looking an element if it is in hashset is O(n) complexity, it returns with a hashset that contains annotations.
+     * @param annotations An array that annotations
+     * @return HashSet
      */
     private HashSet<Class<? extends Annotation>> retrieveAllAnnotations(Annotation[] annotations)
     {
@@ -309,10 +316,10 @@ public class KaptanFieldChecker {
     }
 
     /**
-     *
-     * @param annotations
-     * @param o1
-     * @return
+     * It accepts two argument: an annotation array and a target annotation, then it finds target annotation in the annotation array.
+     * @param annotations It is an array that contains annotations.
+     * @param o1 Target annotation which is going to be searched in annotations array.
+     * @return Annotation object that is found annotation in the annotation array argument.
      */
     private Annotation findAnnotation(Annotation[] annotations, Object o1)
     {

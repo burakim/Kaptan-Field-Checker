@@ -23,11 +23,15 @@
 
 package kaptan;
 
-
+/**
+ * KaptanField interface helps you to use your custom class in the Kaptan field checker system.
+ */
 public interface KaptanField {
     /**
-     *
-     * @return
+     *It returns size of custom data structure or class. For example, It returns size of stored elements for ArrayList.
+     * @author Halim Burak Yesilyurt
+     * @since 1.0
+     * @return The size of KaptanField implemented custom user's object in Integer format.
      */
     int size();
 }
