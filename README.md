@@ -1,11 +1,22 @@
 # Kaptan Class Field Value Checker [![Build Status](https://travis-ci.com/burakim/Kaptan-Field-Checker.svg?branch=master)](https://travis-ci.com/burakim/Kaptan-Field-Checker)
 > *"Kaptan" is a Turkish word that means captain.*
 
-Kaptan is a JAVA library that checks class variables in terms of input validation and verification. If it sees any variable violation, it immediately throws **FieldViolationException**.
+Kaptan is a JAVA library that checks class fields in terms of input validation and verification. If it sees any variable violation, it immediately throws **FieldViolationException**.
 
 ## Getting Started
-
-### How Can I Use It?
+### How Can I Get It?
+#### Gradle
+```compile 'me.yesilyurt.burak:kaptan-field-checker:1.0.0'```
+#### Maven
+```
+<dependency>
+  <groupId>me.yesilyurt.burak</groupId>
+  <artifactId>kaptan-field-checker</artifactId>
+  <version>1.0.0</version>
+  <type>pom</type>
+</dependency>
+```
+### How Can I Use It? [![Javadocs](https://www.javadoc.io/badge/me.yesilyurt.burak/kaptan-field-checker.svg)](https://www.javadoc.io/doc/me.yesilyurt.burak/kaptan-field-checker)
 Let's say that you have a model (POJO) class whose name is **User** and it has **username** and **password** String fields. Let's assume you don't want to get any null assignment for **username** field and empty value assignment for **password** field. You write an input validation mechanism on your own or you can use **Kaptan** for it. The below example shows a way to use **Kaptan** for it.
 ```java
 public class User {
