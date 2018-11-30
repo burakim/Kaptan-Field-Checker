@@ -6,6 +6,8 @@ group 'me.yesilyurt.burak'
 artifacts {'kaptan-field-checker'}
 version '1.0-SNAPSHOT'
 
+
+
 sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
 
@@ -58,10 +60,13 @@ artifacts {
 }
 
 signing {
-    sign configurations.archives
+    if (project.hasProperty('releaseToMavenCentral')) {
+        sign configurations.archives
+    }
 }
 
 publishing {
+    if (project.hasProperty('releaseToMavenCentral')) {
     publications {
         mavenJava(MavenPublication) {
             customizePom(pom)
@@ -104,6 +109,7 @@ publishing {
     }
 
     repositories {
+
         maven {
             url "https://oss.sonatype.org/service/local/staging/deploy/maven2"
             credentials {
@@ -112,10 +118,11 @@ publishing {
             }
         }
     }
-
+}
 }
 
 def customizePom(pom) {
+    if (project.hasProperty('releaseToMavenCentral')) {
     pom.withXml {
         def root = asNode()
 
@@ -158,16 +165,21 @@ def customizePom(pom) {
         }
     }
 }
+}
+if (project.hasProperty('releaseToMavenCentral')) {
+    model {
 
-model {
-    tasks.generatePomFileForMavenJavaPublication {
-        destination = file("$buildDir/generated-pom.xml")
-    }
-    tasks.publishMavenJavaPublicationToMavenLocal {
-        dependsOn project.tasks.signArchives
-    }
-    tasks.publishMavenJavaPublicationToMavenRepository {
-        dependsOn project.tasks.signArchives
+        tasks.generatePomFileForMavenJavaPublication {
+            destination = file("$buildDir/generated-pom.xml")
+        }
+        tasks.publishMavenJavaPublicationToMavenLocal {
+            dependsOn project.tasks.signArchives
+        }
+        tasks.publishMavenJavaPublicationToMavenRepository {
+            dependsOn project.tasks.signArchives
+        }
+
     }
 }
+
 
