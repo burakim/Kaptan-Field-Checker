@@ -1,24 +1,23 @@
 apply plugin: 'java'
-
+apply plugin: 'maven-publish'
+apply plugin: 'signing'
 
 group 'me.yesilyurt.burak'
-artifacts {'kaptan'}
+artifacts {'kaptan-field-checker'}
 version '1.0-SNAPSHOT'
 
-sourceCompatibility = JavaVersion.VERSION_1_10
-targetCompatibility = JavaVersion.VERSION_1_10
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
 
 
 
 repositories {
     mavenCentral()
-    jcenter()
 }
 
 
 
 sourceSets {
-
     main {
         java {
             srcDir 'src/main/java'
@@ -27,7 +26,7 @@ sourceSets {
     }
     test {
         java {
-            srcDir  'src/test/java'  // Note @Peter's comment below
+            srcDir  'src/test/java'
         }
     }
 }
@@ -40,5 +39,135 @@ dependencies {
 
 test {
     useJUnitPlatform()
+}
+
+task sourceJar(type: Jar) {
+    classifier "sources"
+    from sourceSets.main.allJava
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier "javadoc"
+    from javadoc.destinationDir
+}
+
+artifacts {
+    archives jar
+    archives sourceJar
+    archives javadocJar
+}
+
+signing {
+    sign configurations.archives
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            customizePom(pom)
+            groupId 'me.yesilyurt.burak'
+            artifactId 'kaptan-field-checker'
+            version '1.0.0'
+
+            from components.java
+
+            // create the sign pom artifact
+            pom.withXml {
+                def pomFile = file("${project.buildDir}/generated-pom.xml")
+                writeTo(pomFile)
+                def pomAscFile = signing.sign(pomFile).signatureFiles[0]
+                artifact(pomAscFile) {
+                    classifier = null
+                    extension = 'pom.asc'
+                }
+            }
+
+            artifact(sourceJar) {
+                classifier = 'sources'
+            }
+            artifact(javadocJar) {
+                classifier = 'javadoc'
+            }
+            // create the signed artifacts
+            project.tasks.signArchives.signatureFiles.each {
+                artifact(it) {
+                    def matcher = it.file =~ /-(sources|javadoc)\.jar\.asc$/
+                    if (matcher.find()) {
+                        classifier = matcher.group(1)
+                    } else {
+                        classifier = null
+                    }
+                    extension = 'jar.asc'
+                }
+            }
+        }
+    }
+
+    repositories {
+        maven {
+            url "https://oss.sonatype.org/service/local/staging/deploy/maven2"
+            credentials {
+                username sonatypeUsername
+                password sonatypePassword
+            }
+        }
+    }
+
+}
+
+def customizePom(pom) {
+    pom.withXml {
+        def root = asNode()
+
+        // eliminate test-scoped dependencies (no need in maven central POMs)
+        root.dependencies.removeAll { dep ->
+            dep.scope == "test"
+        }
+
+        // add all items necessary for maven central publication
+        root.children().last() + {
+            resolveStrategy = Closure.DELEGATE_FIRST
+            description 'It checks class fields in terms of input validation and verification.'
+            name 'Kaptan Field Checker'
+            url 'https://github.com/burakim/Kaptan-Field-Checker'
+            organization {
+                name 'me.yesilyurt.burak'
+                url 'https://burak.yesilyurt.me'
+            }
+            issueManagement {
+                system 'GitHub'
+                url 'https://github.com/burakim/Kaptan-Field-Checker/issues'
+            }
+            licenses {
+                license {
+                    name 'MIT License'
+                    url 'https://github.com/burakim/Kaptan-Field-Checker/blob/master/LICENSE'
+                    distribution 'repo'
+                }
+            }
+            scm {
+                url 'https://github.com/burakim/Kaptan-Field-Checker'
+                connection 'scm:git:git://github.com/burakim/Kaptan-Field-Checker.git'
+                developerConnection 'scm:git:ssh://git@github.com:burakim/Kaptan-Field-Checker.git'
+            }
+            developers {
+                developer {
+                    name 'Halim Burak Yesilyurt'
+                }
+            }
+        }
+    }
+}
+
+model {
+    tasks.generatePomFileForMavenJavaPublication {
+        destination = file("$buildDir/generated-pom.xml")
+    }
+    tasks.publishMavenJavaPublicationToMavenLocal {
+        dependsOn project.tasks.signArchives
+    }
+    tasks.publishMavenJavaPublicationToMavenRepository {
+        dependsOn project.tasks.signArchives
+    }
 }
 

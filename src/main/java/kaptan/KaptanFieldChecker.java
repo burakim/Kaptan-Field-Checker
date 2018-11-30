@@ -83,7 +83,7 @@ public class KaptanFieldChecker {
         {
             Annotation[] annotations = field.getAnnotations();
             HashSet<Class<? extends Annotation>> annotationHashSet = retrieveAllAnnotations(annotations);
-            if(!field.canAccess(o1)) {
+            if(!field.isAccessible()) {
                 field.setAccessible(true);
                 didWeChangeAccesibility = true;
             }
