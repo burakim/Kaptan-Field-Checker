@@ -2,3 +2,5 @@
 language: java
 #jdk:
 #  - openjdk10
+after_success:
+- ./gradlew cobertura coveralls
