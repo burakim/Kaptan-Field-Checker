@@ -6,13 +6,13 @@ Kaptan is a JAVA library that checks class fields in terms of input validation a
 ## Getting Started
 ### How Can I Get It?
 #### Gradle
-```compile 'me.yesilyurt.burak:kaptan-field-checker:1.0.0'```
+```compile 'me.yesilyurt.burak:kaptan-field-checker:1.0.1'```
 #### Maven
 ```
 <dependency>
   <groupId>me.yesilyurt.burak</groupId>
   <artifactId>kaptan-field-checker</artifactId>
-  <version>1.0.0</version>
+  <version>1.0.1</version>
   <type>pom</type>
 </dependency>
 ```
