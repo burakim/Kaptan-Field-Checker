@@ -11,7 +11,12 @@ version '1.0.1'
 sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
 
+plugins {
+    id 'net.saliman.cobertura' version '2.3.1'
+    id 'com.github.kt3k.coveralls' version '2.8.2'
+}
 
+cobertura.coverageFormats = ['html', 'xml'] // coveralls plugin depends on xml format report
 
 repositories {
     mavenCentral()
@@ -38,6 +43,8 @@ dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.3.1'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.3.1'
 }
+
+
 
 test {
     useJUnitPlatform()
@@ -181,5 +188,3 @@ if (project.hasProperty('releaseToMavenCentral')) {
 
     }
 }
-
-
