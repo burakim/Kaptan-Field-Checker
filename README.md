@@ -1,7 +1,7 @@
 # Kaptan Class Field Value Checker [![Build Status](https://travis-ci.com/burakim/Kaptan-Field-Checker.svg?branch=master)](https://travis-ci.com/burakim/Kaptan-Field-Checker)
 > *"Kaptan" is a Turkish word that means captain.*
 
-Kaptan is a JAVA library that checks class fields in terms of input validation and verification. If it sees any variable violation, it immediately throws **FieldViolationException**.
+Kaptan is a JAVA library that checks class fields in terms of input validation and verification. If it sees any variable value violation, it immediately throws **FieldViolationException**.
 
 ## Getting Started
 ### How Can I Get It?
@@ -17,7 +17,7 @@ Kaptan is a JAVA library that checks class fields in terms of input validation a
 </dependency>
 ```
 ### How Can I Use It? [![Javadocs](https://www.javadoc.io/badge/me.yesilyurt.burak/kaptan-field-checker.svg)](https://www.javadoc.io/doc/me.yesilyurt.burak/kaptan-field-checker)
-Let's say that you have a model (POJO) class whose name is **User** and it has **username** and **password** String fields. Let's assume you don't want to get any null assignment for **username** field and empty value assignment for **password** field. You write an input validation mechanism on your own or you can use **Kaptan** for it. The below example shows a way to use **Kaptan** for it.
+Let's say that you have a model (POJO) class whose name is **User** and it has **username** and **password** String fields. Let's assume that you don't want to get any null assignment for the **username** field and empty value assignment for the **password** field. You can write an input validation mechanism on your own or you can use **Kaptan** for checking your class fields. The below example shows a way to use **Kaptan** for it.
 ```java
 public class User {
     @MustBeNonNull
@@ -28,7 +28,7 @@ public class User {
 ```
 Did you realise **@MustBeNonNull** and **@MustBeNonEmpty** annotations? 
 
-Those are annotations to help **Kaptan** to understand your intentations and the structure of your class. Since you put **@MustBeNonNull** above of your **username** field, **Kaptan** checks **username** field if it is null. If it sees null assignment in **username** field, it throws **FieldViolationException** to inform you.
+Those are annotations that help **Kaptan** for understanding what your intentions and the structure of your class are. Since you put **@MustBeNonNull** above of your **username** field, **Kaptan** checks the **username** field if it is null. If it sees a null assignment in the **username** field, it throws a **FieldViolationException** to inform you.
 
 **Kaptan** supports following annotations:
 * @MustBeNonNull
@@ -39,8 +39,8 @@ Those are annotations to help **Kaptan** to understand your intentations and the
 * @EnforceRegexRule(\<regex-string-value\>)
 * @EnforceIntervalConstraint(min=\<value\>, max=\<value\>)
 
-#### To use **Kaptan** to check your classes' fields
-You can initiliaze a **KaptanFieldChecker** object, then you should pass your model object into **check** function. Since it might throw **FieldViolationException**, you should write try&catch block and place **KaptanFieldChecker** in your try block. You can find an example below.
+#### To use **Kaptan** for checking your class fields
+You can initiliaze a **KaptanFieldChecker** object, then you can continue by passing your model object (e.g. User class) into the **check** function of the **KaptanFieldChecker** object. Since it might throw a **FieldViolationException**, you should write a try&catch block and place the **KaptanFieldChecker** related code lines in your try block. You can find an example below.
 ```java
 try{
 KaptanFieldChecker kaptanFieldChecker = new KaptanFieldChecker();
@@ -54,7 +54,7 @@ catch(FieldViolationException e){
 ```
 
 #### What does Kaptan support?
-Kaptan supports primitives, data structures that are in the Java collection library, and Strings. If you want to Kaptan support your custom data structure, you can make it happen by implementing **KaptanField** interface in your custom data structure.
+Kaptan supports primitives, data structures that are in the Java collection library, and Strings. If you want to Kaptan support your custom data structure, you can make it happen by implementing a **KaptanField** interface into your custom data structure.
 
 ## License
 
