@@ -253,7 +253,7 @@ public class KaptanFieldChecker {
         {
             size = retrievedObject.toString().length();
         }
-        return (size>=0 && ((min<size)&&(size<=max)))
+        return (size>=0 && ((min<size)&&(size<=max)));
     }
 
     /**
