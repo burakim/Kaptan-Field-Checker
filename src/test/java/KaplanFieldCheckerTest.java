@@ -1,3 +1,4 @@
+import kaptan.KaptanField;
 import kaptan.KaptanFieldChecker;
 import kaptan.exception.FieldViolationException;
 import org.junit.jupiter.api.Test;
@@ -182,5 +183,14 @@ public class KaplanFieldCheckerTest {
         user.setWaitingFindings(new PriorityQueue<>());
         assertThrows(FieldViolationException.class,()->{ kaptanFieldChecker.check((user));});
 
+    }
+
+    @Test
+    void checkWithUserWhoHasEnumarations()
+    {
+        UserHasEnums userHasEnums = new UserHasEnums();
+        userHasEnums.setSampleEnum(SampleEnum.ENUM_1);
+        KaptanFieldChecker kaptanFieldChecker = new KaptanFieldChecker();
+        assertDoesNotThrow(()->{kaptanFieldChecker.check(userHasEnums);},"Exception is thrown: Unexpected");
     }
 }

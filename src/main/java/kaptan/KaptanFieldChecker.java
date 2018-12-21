@@ -260,6 +260,10 @@ public class KaptanFieldChecker {
         {
             size = ((String) retrievedObject).length();
         }
+        else if(retrievedObject instanceof Enum)
+        {
+            size = retrievedObject.toString().length();
+        }
         if(size>=0 && ((min<size)&&(size<=max)))
         {
             return true;
