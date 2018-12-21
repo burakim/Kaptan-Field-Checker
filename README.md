@@ -1,3 +1,4 @@
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/722394ec79bc48178c5101b929517400)](https://app.codacy.com/app/burakim/Kaptan-Field-Checker?utm_source=github.com&utm_medium=referral&utm_content=burakim/Kaptan-Field-Checker&utm_campaign=Badge_Grade_Dashboard)
 # Kaptan Class Field Value Checker [![Build Status](https://travis-ci.com/burakim/Kaptan-Field-Checker.svg?branch=master)](https://travis-ci.com/burakim/Kaptan-Field-Checker)
 > *"Kaptan" is a Turkish word that means captain.*
 
