@@ -119,25 +119,18 @@ public class KaptanFieldChecker {
                         arrayList.add(MustBeNull.class);
                     }
 
-                    if (annotationHashSet.contains(MustBeEmpty.class)) {
-
-                        if(isPassedSizeConstraint(retrievedObject,0,Integer.MAX_VALUE)){
-                          arrayList.add(MustBeEmpty.class);
-                      }
+                    if (annotationHashSet.contains(MustBeEmpty.class) && isPassedSizeConstraint(retrievedObject,0,Integer.MAX_VALUE)) {
+                        arrayList.add(MustBeEmpty.class);
                     }
 
-                    if (annotationHashSet.contains(MustBeNonEmpty.class)) {
-                        if(!isPassedSizeConstraint(retrievedObject,0,Integer.MAX_VALUE))
-                        {
+                    if (annotationHashSet.contains(MustBeNonEmpty.class) && !isPassedSizeConstraint(retrievedObject,0,Integer.MAX_VALUE)) {
                             arrayList.add(MustBeNonEmpty.class);
-                        }
                     }
 
                     if(annotationHashSet.contains(EnforceIntervalConstraint.class))
                     {
                         EnforceIntervalConstraint annotation = (EnforceIntervalConstraint) findAnnotation(annotations,EnforceIntervalConstraint.class);
-                        if(annotation != null) {
-                            if (!isPassedIntervalConstraint(annotation, retrievedObject))
+                        if(annotation != null && !isPassedIntervalConstraint(annotation, retrievedObject)) {
                                 arrayList.add(EnforceIntervalConstraint.class);
                         }
 
@@ -155,10 +148,8 @@ public class KaptanFieldChecker {
                     if(annotationHashSet.contains(EnforceRegexRule.class))
                     {
                         EnforceRegexRule annotation = (EnforceRegexRule) findAnnotation(annotations,EnforceRegexRule.class);
-                        if(annotation != null) {
-                            if (!isPassedRegexRule(annotation, retrievedObject)) {
+                        if(annotation != null && !isPassedRegexRule(annotation, retrievedObject)) {
                                 arrayList.add(EnforceRegexRule.class);
-                            }
                         }
                     }
 
@@ -176,40 +167,40 @@ public class KaptanFieldChecker {
 
 
 
-    private boolean doesItContainsFollowingDecimalValues(double[] values, Object retrievedObject)
-    {
-        double value = Double.MIN_VALUE;
-        if(retrievedObject instanceof Number)
-        {
-            value = (Double) retrievedObject;
-        }
-
-        Arrays.sort(values);
-
-        if(Arrays.binarySearch(values,value)>=0)
-            return true;
-        else
-            return false;
-
-    }
-
-    private boolean doesItContainsFollowingStringValues(String[] values, Object retrievedObject)
-    {
-        Arrays.sort(values);
-        if(retrievedObject instanceof  String)
-        {
-            String str = (String)retrievedObject;
-            if(Arrays.binarySearch(values,str) >= 0)
-            return true;
-            else
-                return false;
-        }
-        else
-        {
-            return false;
-        }
-
-    }
+//    private boolean doesItContainsFollowingDecimalValues(double[] values, Object retrievedObject)
+//    {
+//        double value = Double.MIN_VALUE;
+//        if(retrievedObject instanceof Number)
+//        {
+//            value = (Double) retrievedObject;
+//        }
+//
+//        Arrays.sort(values);
+//
+//        if(Arrays.binarySearch(values,value)>=0)
+//            return true;
+//        else
+//            return false;
+//
+//    }
+//
+//    private boolean doesItContainsFollowingStringValues(String[] values, Object retrievedObject)
+//    {
+//        Arrays.sort(values);
+//        if(retrievedObject instanceof  String)
+//        {
+//            String str = (String)retrievedObject;
+//            if(Arrays.binarySearch(values,str) >= 0)
+//            return true;
+//            else
+//                return false;
+//        }
+//        else
+//        {
+//            return false;
+//        }
+//
+//    }
 
     /**
      * It checks EnforceIntervalConstraint annotated fields of target object in terms of compatibility of defined interval constraint.
@@ -225,10 +216,8 @@ public class KaptanFieldChecker {
         if(retrievedObject instanceof Number)
         {
             long retrievedNumber =((Number)retrievedObject).longValue();
-            if(minVal<retrievedNumber && maxVal>= retrievedNumber)
-            {
-                return true;
-            }
+            return (minVal<retrievedNumber && maxVal>= retrievedNumber);
+
 
         }
         return false;
@@ -264,13 +253,7 @@ public class KaptanFieldChecker {
         {
             size = retrievedObject.toString().length();
         }
-        if(size>=0 && ((min<size)&&(size<=max)))
-        {
-            return true;
-        }
-        else{
-            return false;
-        }
+        return (size>=0 && ((min<size)&&(size<=max)))
     }
 
     /**
