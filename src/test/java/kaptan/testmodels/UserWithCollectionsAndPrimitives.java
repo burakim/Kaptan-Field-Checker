@@ -1,4 +1,4 @@
-package testmodels;
+package kaptan.testmodels;
 
 
 import kaptan.annotations.EnforceIntervalConstraint;
@@ -12,7 +12,7 @@ public class UserWithCollectionsAndPrimitives {
     private ArrayList<String> names;
 
     @EnforceIntervalConstraint(min = 18,max = 60)
-    int age;
+    private int age;
 
     public UserWithCollectionsAndPrimitives()
     {

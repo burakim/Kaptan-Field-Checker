@@ -1,13 +1,11 @@
-package testmodels;
+package kaptan.testmodels;
 
+import kaptan.annotations.MustBeNull;
 
-import kaptan.annotations.MustBeNonNull;
-
-public class AllNonNullUser {
-
-    @MustBeNonNull
+public class AllNullUser {
+    @MustBeNull
     private String username;
-    @MustBeNonNull
+    @MustBeNull
     private String password;
 
 
@@ -26,4 +24,5 @@ public class AllNonNullUser {
     public void setPassword(String password) {
         this.password = password;
     }
+
 }

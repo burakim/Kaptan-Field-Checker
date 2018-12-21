@@ -1,12 +1,12 @@
-package testmodels;
+package kaptan.testmodels;
 
 
-import kaptan.annotations.MustBeNonEmpty;
+import kaptan.annotations.MustBeEmpty;
 
-public class AllMustBeNonEmpty {
-    @MustBeNonEmpty
+public class AllMustBeEmptyUser {
+    @MustBeEmpty
     private String username;
-    @MustBeNonEmpty
+    @MustBeEmpty
     private String password;
 
 

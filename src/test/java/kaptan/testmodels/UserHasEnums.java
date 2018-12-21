@@ -21,7 +21,7 @@
  * SOFTWARE.
  */
 
-package testmodels;
+package kaptan.testmodels;
 
 import kaptan.annotations.MustBeNonEmpty;
 import kaptan.annotations.MustBeNonNull;
