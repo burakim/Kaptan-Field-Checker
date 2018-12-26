@@ -164,6 +164,8 @@ def customizePom(pom) {
             developers {
                 developer {
                     name 'Halim Burak Yesilyurt'
+                    email 'h.burakyesilyurt@gmail.com'
+                    url 'https://burak.yesilyurt.me'
                 }
             }
         }
