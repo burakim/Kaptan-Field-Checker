@@ -7,14 +7,14 @@ Kaptan is a JAVA library that checks class fields in terms of input validation a
 ### How Can I Get It
 #### Gradle
 ```java
-compile 'me.yesilyurt.burak:kaptan-field-checker:1.0.1'
+compile 'me.yesilyurt.burak:kaptan-field-checker:1.1.0'
 ```
 #### Maven
 ```xml
 <dependency>
   <groupId>me.yesilyurt.burak</groupId>
   <artifactId>kaptan-field-checker</artifactId>
-  <version>1.0.1</version>
+  <version>1.1.0</version>
   <type>pom</type>
 </dependency>
 ```
@@ -33,13 +33,20 @@ Did you realise **@MustBeNonNull** and **@MustBeNonEmpty** annotations?
 Those are annotations that help **Kaptan** for understanding what your intentions and the structure of your class are. Since you put **@MustBeNonNull** above of your **username** field, **Kaptan** checks the **username** field if it is null. If it sees a null assignment in the **username** field, it throws a **FieldViolationException** to inform you.
 
 **Kaptan** supports following annotations:
-*.@MustBeNonNull
-*.@MustBeNull
-*.@MustBeNonEmpty
-*.@MustBeEmpty
-*.@EnforceSizeConstraint(min=\<value\>, max=\<value\>)
-*.@EnforceRegexRule(\<regex-string-value\>)
-*.@EnforceIntervalConstraint(min=\<value\>, max=\<value\>)
+- @MustBeNonNull
+- @MustBeNull
+- @MustBeNonEmpty
+- @MustBeEmpty
+- @EnforceSizeConstraint(min=\<value\>, max=\<value\>)
+- @EnforceRegexRule(\<regex-string-value\>)
+- @EnforceIntervalConstraint(min=\<value\>, max=\<value\>)
+- @MustContainsFollowingByteValues(values={,,..})
+- @MustContainsFollowingDoubleValues(values={,,..})
+- @MustContainsFollowingFloatValues(values={,,..})
+- @MustContainsFollowingIntegerValues(values={,,..})
+- @MustContainsFollowingLongValues(values={,,..})
+- @MustContainsFollowingShortIntegerValues(values={,,..})
+- @MustContainsFollowingStringValues(values={,,..})
 
 #### To use **Kaptan** for checking your class fields
 You can initiliaze a **KaptanFieldChecker** object, then you can continue by passing your model object (e.g. User class) into the **check** function of the **KaptanFieldChecker** object. Since it might throw a **FieldViolationException**, you should write a try&catch block and place the **KaptanFieldChecker** related code lines in your try block. You can find an example below.
@@ -56,7 +63,7 @@ catch(FieldViolationException e){
 ```
 
 #### What does Kaptan support
-Kaptan supports primitives, data structures that are in the Java collection library, and Strings. If you want to Kaptan support your custom data structure, you can make it happen by implementing a **KaptanField** interface into your custom data structure.
+Kaptan supports primitives, enumerations, and data structures that are in the Java collection library, and Strings. If you want to Kaptan support your custom data structure, you can make it happen by implementing a **KaptanField** interface into your custom data structure.
 
 ## License
 
