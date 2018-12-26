@@ -23,11 +23,8 @@
 
 package kaptan.testmodels;
 
-import kaptan.KaptanField;
 import kaptan.annotations.*;
-import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
 
 
 public class UserWithFollowingValuesAnnotations{

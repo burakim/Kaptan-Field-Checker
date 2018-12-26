@@ -3,7 +3,6 @@ package kaptan.exceptions;
 
 import kaptan.models.Violation;
 
-import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 
 /**
