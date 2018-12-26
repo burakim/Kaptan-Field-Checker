@@ -1,5 +1,7 @@
-package kaptan.exception;
+package kaptan.exceptions;
 
+
+import kaptan.models.Violation;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
@@ -10,14 +12,15 @@ import java.util.ArrayList;
  */
 public class FieldViolationException extends Exception {
 
-    private ArrayList<Class<? extends Annotation>> violations;
+    // It contains violations which are found by Kaptan in the target class.
+    private ArrayList<Violation> violations;
 
     /**
      * It is initialized with a violation summary message and an annotation array that contains class field value assignment violations.
      * @param message It should contains a message to shown up in terminal to inform developer. In Kaptan environment, it contains a summary of class field violations.
      * @param violations An ArrayList that contains current annotations of class filed violations.
      */
-    public FieldViolationException(String message,ArrayList<Class<? extends Annotation>> violations)
+    public FieldViolationException(String message,ArrayList<Violation> violations)
     {
         super(message);
         this.violations = violations;
@@ -27,7 +30,7 @@ public class FieldViolationException extends Exception {
      * It returns the class variable assignment violations in ArrayList format.
      * @return ArrayList
      */
-    public ArrayList<Class<? extends Annotation>> getViolations()
+    public ArrayList<Violation> getViolations()
     {
         return violations;
     }

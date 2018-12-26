@@ -1,7 +1,9 @@
 package kaptan.annotations;
 
+import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
  * EnforceRegexRule:
@@ -11,6 +13,7 @@ import java.lang.annotation.RetentionPolicy;
  * <br> It supports only String class variables.
  */
 @Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.FIELD)
 public @interface EnforceRegexRule {
     String value();
 }

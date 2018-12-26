@@ -23,7 +23,7 @@
 
 package kaptan;
 
-import kaptan.exception.FieldViolationException;
+import kaptan.exceptions.FieldViolationException;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -32,6 +32,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import kaptan.annotations.*;
+import kaptan.models.Violation;
+import org.apache.commons.lang3.ArrayUtils;
 
 /**
  * KaptanFieldChecker is the main class that checks the target object in terms of field value assignment violations.
@@ -55,7 +57,7 @@ public class KaptanFieldChecker {
         if(targetObject == null)
             throw new IllegalArgumentException("Argument can not be null;");
            try {
-               ArrayList<Class<? extends Annotation>> violations = checkIfThereIsAnyViolatedFields(targetObject);
+               ArrayList<Violation> violations = checkIfThereIsAnyViolatedFields(targetObject);
                if (violations.size() > 0) {
                    String exceptionMessage = targetObject.getClass().getName()+" named class has "+violations.size()+" class field value assignment violations.";
                    throw new FieldViolationException(exceptionMessage,violations);
@@ -75,9 +77,9 @@ public class KaptanFieldChecker {
      * @return ArrayList that contains violated annotation rules.
      * @throws IllegalAccessException If Kaptan can not access assigned value of class variable, IllegalAccessException is thrown.
      */
-    private ArrayList<Class<? extends Annotation>> checkIfThereIsAnyViolatedFields(Object o1) throws IllegalAccessException {
+    private ArrayList<Violation> checkIfThereIsAnyViolatedFields(Object o1) throws IllegalAccessException {
         Field[] fields = o1.getClass().getDeclaredFields();
-        ArrayList<Class<? extends Annotation>> arrayList = new ArrayList<>();
+        ArrayList<Violation> arrayList = new ArrayList<>();
         boolean didWeChangeAccesibility = false;
         for(Field field: fields)
         {
@@ -90,48 +92,74 @@ public class KaptanFieldChecker {
             Object retrievedObject = field.get(o1);
             if(retrievedObject == null)
             {
-
                 if(annotationHashSet.contains(MustBeNonNull.class))
                 {
-                    arrayList.add(MustBeNonNull.class);
+                    arrayList.add(new Violation(MustBeNonNull.class,field));
                 }
                 if(annotationHashSet.contains(MustBeNonEmpty.class))
                 {
-                    arrayList.add(MustBeNonEmpty.class);
+                    arrayList.add(new Violation(MustBeNonEmpty.class,field));
                 }
                 if(annotationHashSet.contains(EnforceIntervalConstraint.class))
                 {
-                    arrayList.add(EnforceIntervalConstraint.class);
+                    arrayList.add(new Violation(EnforceIntervalConstraint.class,field));
                 }
                 if(annotationHashSet.contains(EnforceRegexRule.class))
                 {
-                    arrayList.add(EnforceRegexRule.class);
+                    arrayList.add(new Violation(EnforceRegexRule.class,field));
                 }
                 if(annotationHashSet.contains(EnforceSizeConstraint.class))
                 {
-                    arrayList.add(EnforceSizeConstraint.class);
+                    arrayList.add(new Violation(EnforceSizeConstraint.class,field));
+                }
+                if(annotationHashSet.contains(MustContainsFollowingByteValues.class))
+                {
+                    arrayList.add(new Violation(MustContainsFollowingByteValues.class,field));
+                }
+                if(annotationHashSet.contains(MustContainsFollowingDoubleValues.class))
+                {
+                    arrayList.add(new Violation(MustContainsFollowingDoubleValues.class,field));
+                }
+                if(annotationHashSet.contains(MustContainsFollowingFloatValues.class))
+                {
+                    arrayList.add(new Violation(MustContainsFollowingFloatValues.class,field));
+                }
+                if(annotationHashSet.contains(MustContainsFollowingIntegerValues.class))
+                {
+                    arrayList.add(new Violation(MustContainsFollowingIntegerValues.class,field));
+                }
+                if(annotationHashSet.contains(MustContainsFollowingLongValues.class))
+                {
+                    arrayList.add(new Violation(MustContainsFollowingLongValues.class,field));
+                }
+                if(annotationHashSet.contains(MustContainsFollowingShortIntegerValues.class))
+                {
+                    arrayList.add(new Violation(MustContainsFollowingShortIntegerValues.class,field));
+                }
+                if(annotationHashSet.contains(MustContainsFollowingStringValues.class))
+                {
+                    arrayList.add(new Violation(MustContainsFollowingStringValues.class,field));
                 }
             }
             else
             {
-
                     if (annotationHashSet.contains(MustBeNull.class)) {
-                        arrayList.add(MustBeNull.class);
+                        arrayList.add(new Violation(MustBeNull.class,field));
                     }
 
                     if (annotationHashSet.contains(MustBeEmpty.class) && isPassedSizeConstraint(retrievedObject,0,Integer.MAX_VALUE)) {
-                        arrayList.add(MustBeEmpty.class);
+                        arrayList.add(new Violation(MustBeEmpty.class,field));
                     }
 
                     if (annotationHashSet.contains(MustBeNonEmpty.class) && !isPassedSizeConstraint(retrievedObject,0,Integer.MAX_VALUE)) {
-                            arrayList.add(MustBeNonEmpty.class);
+                            arrayList.add(new Violation(MustBeNonEmpty.class,field));
                     }
 
                     if(annotationHashSet.contains(EnforceIntervalConstraint.class))
                     {
                         EnforceIntervalConstraint annotation = (EnforceIntervalConstraint) findAnnotation(annotations,EnforceIntervalConstraint.class);
                         if(annotation != null && !isPassedIntervalConstraint(annotation, retrievedObject)) {
-                                arrayList.add(EnforceIntervalConstraint.class);
+                                arrayList.add(new Violation(EnforceIntervalConstraint.class,field));
                         }
 
                     }
@@ -142,17 +170,66 @@ public class KaptanFieldChecker {
                             int max = annotation.max();
                             int min = annotation.min();
                             if (!isPassedSizeConstraint(retrievedObject, min, max))
-                                arrayList.add(EnforceSizeConstraint.class);
+                                arrayList.add(new Violation(EnforceSizeConstraint.class,field));
                         }
                     }
                     if(annotationHashSet.contains(EnforceRegexRule.class))
                     {
                         EnforceRegexRule annotation = (EnforceRegexRule) findAnnotation(annotations,EnforceRegexRule.class);
                         if(annotation != null && !isPassedRegexRule(annotation, retrievedObject)) {
-                                arrayList.add(EnforceRegexRule.class);
+                                arrayList.add(new Violation(EnforceRegexRule.class,field));
                         }
                     }
 
+                    if(annotationHashSet.contains(MustContainsFollowingByteValues.class))
+                    {
+                        MustContainsFollowingByteValues annotation = (MustContainsFollowingByteValues) findAnnotation(annotations,MustContainsFollowingByteValues.class);
+                        if(annotation != null && !isPassedMustContainsFollowingValues(ArrayUtils.toObject(annotation.values()),annotation, retrievedObject)) {
+                            arrayList.add(new Violation(MustContainsFollowingByteValues.class,field));
+                        }
+                    }
+                    if(annotationHashSet.contains(MustContainsFollowingDoubleValues.class))
+                    {
+                        MustContainsFollowingDoubleValues annotation = (MustContainsFollowingDoubleValues) findAnnotation(annotations,MustContainsFollowingDoubleValues.class);
+                        if(annotation != null && !isPassedMustContainsFollowingValues(ArrayUtils.toObject(annotation.values()),annotation, retrievedObject)) {
+                            arrayList.add(new Violation(MustContainsFollowingDoubleValues.class,field));
+                        }
+                    }
+                    if(annotationHashSet.contains(MustContainsFollowingFloatValues.class))
+                    {
+                        MustContainsFollowingFloatValues annotation = (MustContainsFollowingFloatValues) findAnnotation(annotations,MustContainsFollowingFloatValues.class);
+                        if(annotation != null && !isPassedMustContainsFollowingValues(ArrayUtils.toObject(annotation.values()),annotation, retrievedObject)) {
+                            arrayList.add(new Violation(MustContainsFollowingFloatValues.class,field));
+                        }
+                    }
+                    if(annotationHashSet.contains(MustContainsFollowingIntegerValues.class))
+                    {
+                        MustContainsFollowingIntegerValues annotation = (MustContainsFollowingIntegerValues) findAnnotation(annotations,MustContainsFollowingIntegerValues.class);
+                        if(annotation != null && !isPassedMustContainsFollowingValues(ArrayUtils.toObject(annotation.values()),annotation, retrievedObject)) {
+                            arrayList.add(new Violation(MustContainsFollowingIntegerValues.class,field));
+                        }
+                    }
+                    if(annotationHashSet.contains(MustContainsFollowingLongValues.class))
+                    {
+                        MustContainsFollowingLongValues annotation = (MustContainsFollowingLongValues) findAnnotation(annotations,MustContainsFollowingLongValues.class);
+                        if(annotation != null && !isPassedMustContainsFollowingValues(ArrayUtils.toObject(annotation.values()),annotation, retrievedObject)) {
+                            arrayList.add(new Violation(MustContainsFollowingLongValues.class,field));
+                        }
+                    }
+                    if(annotationHashSet.contains(MustContainsFollowingShortIntegerValues.class))
+                    {
+                        MustContainsFollowingShortIntegerValues annotation = (MustContainsFollowingShortIntegerValues) findAnnotation(annotations,MustContainsFollowingShortIntegerValues.class);
+                        if(annotation != null && !isPassedMustContainsFollowingValues(ArrayUtils.toObject(annotation.values()),annotation, retrievedObject)) {
+                            arrayList.add(new Violation(MustContainsFollowingShortIntegerValues.class,field));
+                        }
+                    }
+                    if(annotationHashSet.contains(MustContainsFollowingStringValues.class))
+                    {
+                        MustContainsFollowingStringValues annotation = (MustContainsFollowingStringValues) findAnnotation(annotations,MustContainsFollowingStringValues.class);
+                        if(annotation != null && !isPassedMustContainsFollowingValues(annotation.values(),annotation, retrievedObject)) {
+                            arrayList.add(new Violation(MustContainsFollowingStringValues.class,field));
+                        }
+                    }
 
             }
             if (didWeChangeAccesibility) {
@@ -165,42 +242,26 @@ public class KaptanFieldChecker {
 
 
 
+    /**
+     * It checks fields of target object that have MustContainsFollowing derived annotations in terms of compatibility of defined allowed value set
+     * @param valueSet Allowed value set for a target class field.
+     * @param annotation MustContainsFollowing derived annotation such as MustContainsFollowingByteValues etc..
+     * @param retrievedObject A target object that contains MustContainsFollowing derived annotation.
+     * @since 1.1.0
+     * @return boolean It refers if the field has one of values in the allowed value set.
+     */
+    private <T> boolean isPassedMustContainsFollowingValues(T[] valueSet, Annotation annotation, Object retrievedObject )
+    {
+        Arrays.sort(valueSet);
+        int foundIndex = Integer.MIN_VALUE;
+        if(annotation.annotationType().isAnnotationPresent(ValueSearchAnnotation.class))
+        {
+            foundIndex = Arrays.binarySearch(valueSet,retrievedObject);
+        }
+        return foundIndex >= 0;
+    }
 
 
-//    private boolean doesItContainsFollowingDecimalValues(double[] values, Object retrievedObject)
-//    {
-//        double value = Double.MIN_VALUE;
-//        if(retrievedObject instanceof Number)
-//        {
-//            value = (Double) retrievedObject;
-//        }
-//
-//        Arrays.sort(values);
-//
-//        if(Arrays.binarySearch(values,value)>=0)
-//            return true;
-//        else
-//            return false;
-//
-//    }
-//
-//    private boolean doesItContainsFollowingStringValues(String[] values, Object retrievedObject)
-//    {
-//        Arrays.sort(values);
-//        if(retrievedObject instanceof  String)
-//        {
-//            String str = (String)retrievedObject;
-//            if(Arrays.binarySearch(values,str) >= 0)
-//            return true;
-//            else
-//                return false;
-//        }
-//        else
-//        {
-//            return false;
-//        }
-//
-//    }
 
     /**
      * It checks EnforceIntervalConstraint annotated fields of target object in terms of compatibility of defined interval constraint.
@@ -217,7 +278,6 @@ public class KaptanFieldChecker {
         {
             long retrievedNumber =((Number)retrievedObject).longValue();
             return (minVal<retrievedNumber && maxVal>= retrievedNumber);
-
 
         }
         return false;

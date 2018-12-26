@@ -21,16 +21,14 @@
  * SOFTWARE.
  */
 package kaptan;
-import kaptan.exception.FieldViolationException;
+import kaptan.exceptions.FieldViolationException;
 import org.junit.jupiter.api.Test;
 import kaptan.testmodels.*;
 
 import java.util.LinkedList;
 import java.util.PriorityQueue;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 
 public class KaplanFieldCheckerTest {
@@ -215,5 +213,80 @@ public class KaplanFieldCheckerTest {
         userHasEnums.setSampleEnum(SampleEnum.ENUM_1);
         KaptanFieldChecker kaptanFieldChecker = new KaptanFieldChecker();
         assertDoesNotThrow(()->{kaptanFieldChecker.check(userHasEnums);},"Exception is thrown: Unexpected");
+    }
+
+    @Test
+    public void checkWithUserWhoHasFollowingValuesConstraintWithOKPrimitiveValues()
+    {
+        UserWithFollowingValuesAnnotations user = new UserWithFollowingValuesAnnotations();
+        user.setaByte( new Integer(0x1b).byteValue());
+        user.setaDouble(12.23);
+        user.setaLong(2);
+        user.setaName("BRK");
+        user.setAnInt(1);
+        user.setaShort((short)1);
+        KaptanFieldChecker kaptanFieldChecker = new KaptanFieldChecker();
+
+        assertDoesNotThrow(()->{kaptanFieldChecker.check(user);},"Exception is thrown: Unexpected");
+
+    }
+    @Test
+    public void checkWithUserWhoHasFollowingValuesConstraintWithBadPrimitiveValues()
+    {
+        UserWithFollowingValuesAnnotations user = new UserWithFollowingValuesAnnotations();
+        user.setaByte( new Integer(0xff).byteValue());
+        user.setaDouble(1);
+        user.setaLong(3);
+        user.setaName("FALSE");
+        user.setAnInt(0);
+        user.setaShort((short)3);
+        KaptanFieldChecker kaptanFieldChecker = new KaptanFieldChecker();
+        assertThrows(FieldViolationException.class,()->{ kaptanFieldChecker.check((user));});
+        try {
+        kaptanFieldChecker.check(user);
+        }
+        catch (FieldViolationException ex)
+        {
+            assertTrue(ex.getViolations().size() == 6);
+        }
+
+    }
+
+    @Test
+    public void checkWithUserWhoHasFollowingValuesConstraintWithOKObjectValues()
+    {
+        UserWithFollowingValuesAnnotationsForObjects user = new UserWithFollowingValuesAnnotationsForObjects();
+        user.setaByte( new Integer(0x1b).byteValue());
+        user.setaDouble(new Double(12.23));
+        user.setaLong(new Long(2));
+        user.setaName("BRK");
+        user.setAnInt(new Integer(1));
+        user.setaShort(new Short((short) 1));
+        KaptanFieldChecker kaptanFieldChecker = new KaptanFieldChecker();
+
+        assertDoesNotThrow(()->{kaptanFieldChecker.check(user);},"Exception is thrown: Unexpected");
+
+    }
+    @Test
+    public void checkWithUserWhoHasFollowingValuesConstraintWithBadObjectValues()
+    {
+        UserWithFollowingValuesAnnotationsForObjects user = new UserWithFollowingValuesAnnotationsForObjects();
+        user.setaByte( new Integer(0xff).byteValue());
+        user.setaDouble(new Double(1));
+        user.setaLong(new Long(3));
+        user.setaName("FALSE");
+        user.setAnInt(new Integer(0));
+        user.setaShort(new Short((short) 3));
+
+        KaptanFieldChecker kaptanFieldChecker = new KaptanFieldChecker();
+        assertThrows(FieldViolationException.class,()->{ kaptanFieldChecker.check((user));});
+        try {
+            kaptanFieldChecker.check(user);
+        }
+        catch (FieldViolationException ex)
+        {
+            assertTrue(ex.getViolations().size() == 6);
+        }
+
     }
 }

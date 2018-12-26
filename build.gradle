@@ -1,10 +1,11 @@
 apply plugin: 'java'
 apply plugin: 'maven-publish'
 apply plugin: 'signing'
+apply plugin: "jacoco"
 
 group 'me.yesilyurt.burak'
 artifacts {'kaptan-field-checker'}
-version '1.0.1'
+version '1.1.0'
 
 
 
@@ -35,6 +36,7 @@ sourceSets {
 
 
 dependencies {
+    compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.8.1'
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.3.1'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.3.1'
 }
@@ -74,7 +76,7 @@ publishing {
             customizePom(pom)
             groupId 'me.yesilyurt.burak'
             artifactId 'kaptan-field-checker'
-            version '1.0.1'
+            version '1.1.0'
 
             from components.java
 
@@ -181,5 +183,14 @@ if (project.hasProperty('releaseToMavenCentral')) {
             dependsOn project.tasks.signArchives
         }
 
+    }
+}
+
+jacocoTestReport {
+    group = "Reporting"
+    reports {
+        xml.enabled true
+        csv.enabled false
+        html.destination "${buildDir}/reports/coverage"
     }
 }
